@@ -33,19 +33,16 @@ class QqzoneSpider(Spider):
 
     def py_login(self):
         """
-        selenium模拟登录被封,用pyppeteer重写
+        模拟登录
         """
-        # 屏幕截图路径
         screen_shot = str(time.time()).replace('.', '')
         screen_shot = f'{screen_shot}.png'
-        # 日志等级
         pyppeteer_level = logging.WARNING
         logging.getLogger('websockets.protocol').setLevel(pyppeteer_level)
         logging.getLogger('pyppeteer').setLevel(pyppeteer_level)
         logger = getLogger(__name__)
-        # loop
         loop = asyncio.get_event_loop()
-        # 非无头模式下可注释其余参数, 避免多开卡死
+        # 非无头模式调试时可注释其余参数,避免多开卡死
         browser = loop.run_until_complete(pyppeteer.launch(headless=True,
                                                            dupio=True,
                                                            args=[
@@ -68,8 +65,6 @@ class QqzoneSpider(Spider):
                 await asyncio.gather(page.waitForNavigation())
 
                 try:
-                    # await page.waitForSelector(".weibo-main")
-
                     # Get cookies
                     cookies = await get_cookie(page)
                     g_tk = await get_g_tk(cookies)
@@ -138,7 +133,6 @@ class QqzoneSpider(Spider):
     def loads_jsonp(self, _jsonp):
         """
         解析jsonp数据格式为json
-        :return:
         """
         try:
             return json.loads(re.match(".*?({.*}).*", _jsonp, re.S).group(1))
@@ -147,9 +141,9 @@ class QqzoneSpider(Spider):
 
     def start_requests(self):
         """
-        创建表,模拟登录,获取本人相关信息,获取好友列表
+        建表,模拟登录,获取本人相关信息,获取好友列表
         """
-        # 若已经创建相应表,可注释下一行
+        # 若已经创建相应数据库和表,可注释下一行
         self.create_tables()
         uin, cookies, g_tk, q_tk = self.py_login()
         pos = 0
@@ -269,9 +263,9 @@ class QqzoneSpider(Spider):
             if result['data'].get('commentList'):
                 for i in result['data']['commentList']:
                     # 若留言可见,存入留言表
-                    if i.get('content'):
+                    if i.get('ubbContent'):
                         item = MsgItem()
-                        item['content'] = i['htmlContent']
+                        item['content'] = i['ubbContent']
                         m_uin = i['uin']
                         item['m_uin'] = m_uin
                         item['uin'] = uin
@@ -314,8 +308,8 @@ class QqzoneSpider(Spider):
         解析用户信息, score为亲密度
         """
         result = self.loads_jsonp(response.text)
-        if result.get('message') == '获取成功':
-            data = result['data']
+        if result.get('uin'):
+            data = result
             item = AccountItem()
             uin = data['uin']
             item['uin'] = uin
@@ -332,7 +326,7 @@ class QqzoneSpider(Spider):
         解析点赞用户
         """
         result = self.loads_jsonp(response.text)
-        if result.get('message') == 'succ!':
+        if result.get('data'):
             uin = response.meta['uin']
             for i in result['data']['like_uin_info']:
                 item = LikesItem()

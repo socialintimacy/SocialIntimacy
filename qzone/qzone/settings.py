@@ -8,7 +8,7 @@ NEWSPIDER_MODULE = 'qzone.spiders'
 ROBOTSTXT_OBEY = False
 
 # 下载延迟
-DOWNLOAD_DELAY = 3
+# DOWNLOAD_DELAY = 3
 
 DEFAULT_REQUEST_HEADERS = {
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -20,8 +20,8 @@ ITEM_PIPELINES = {
    'qzone.pipelines.MySQLTwistedPipeline': 300,
 }
 
-# 默认开启自动限速,未测试不限速是否会被反爬
-AUTOTHROTTLE_ENABLED = True
+# 经测试可以关闭自动限速, 但第四次手动登录后无法获取说说列表,换号后也不行.似乎说说端口会封ip,待测试
+# AUTOTHROTTLE_ENABLED = True
 
 # 配置MySQL
 MYSQL_HOST = 'localhost'
