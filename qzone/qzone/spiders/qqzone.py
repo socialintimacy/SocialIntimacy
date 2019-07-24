@@ -62,7 +62,9 @@ class QqzoneSpider(Spider):
                 await page.screenshot({'path': screen_shot})
                 im = Image.open(screen_shot)
                 im.show()
-                await asyncio.gather(page.waitForNavigation())
+                # 多次登录后, 登录跳转到主页但长时间等待与某网址通信, 造成程序超时.
+                # 延长超时时间
+                await asyncio.gather(page.waitForNavigation({'timeout': 90000}))
 
                 try:
                     # Get cookies
@@ -143,8 +145,8 @@ class QqzoneSpider(Spider):
         """
         建表,模拟登录,获取本人相关信息,获取好友列表
         """
-        # 若已经创建相应数据库和表,可注释下一行
-        self.create_tables()
+        # 若已建表,可注释下一行
+        # self.create_tables()
         uin, cookies, g_tk, q_tk = self.py_login()
         pos = 0
         start_num = 0
@@ -152,7 +154,7 @@ class QqzoneSpider(Spider):
                       callback=self.account_parse)
         yield Request(url=self.friend_url.format(uin=uin, g_tk=g_tk), cookies=cookies,
                       callback=self.uin_parse,
-                      meta={'cookies': cookies, 'g_tk': g_tk, 'q_tk': q_tk})
+                      meta={'cookies': cookies, 'g_tk': g_tk, 'q_tk': q_tk, 'o_uin': uin})
         yield Request(url=self.taotao_url.format(uin=uin, pos=pos, g_tk=g_tk, q_tk=q_tk), cookies=cookies,
                       callback=self.taotao_parse,
                       meta={'cookies': cookies, 'pos': pos, 'g_tk': g_tk, 'uin': uin, 'q_tk': q_tk})
@@ -169,6 +171,7 @@ class QqzoneSpider(Spider):
             g_tk = response.meta['g_tk']
             q_tk = response.meta['q_tk']
             cookies = response.meta['cookies']
+            o_uin = response.meta['o_uin']
             start_num = 0
             pos = 0
             for i in result['data']['items_list']:
@@ -179,7 +182,7 @@ class QqzoneSpider(Spider):
                               meta={'score': score})
                 yield Request(url=self.taotao_url.format(uin=uin, g_tk=g_tk, pos=pos, q_tk=q_tk), cookies=cookies,
                               callback=self.taotao_parse,
-                              meta={'cookies': cookies, 'pos': pos, 'g_tk': g_tk, 'uin': uin, 'q_tk': q_tk})
+                              meta={'cookies': cookies, 'pos': pos, 'g_tk': g_tk, 'uin': uin, 'q_tk': q_tk, 'o_uin': o_uin})
                 yield Request(url=self.msgb_url.format(uin=uin, g_tk=g_tk, start_num=start_num), cookies=cookies,
                               callback=self.msgb_parse,
                               meta={'cookies': cookies, 'g_tk': g_tk, 'start_num': start_num, 'uin': uin})
@@ -195,11 +198,12 @@ class QqzoneSpider(Spider):
             q_tk = response.meta['q_tk']
             pos = response.meta['pos']
             uin = response.meta['uin']
+            o_uin = response.meta['o_uin']
             total = result['total']
             for i in result['msglist']:
                 item = Taotaoitem()
-                id = i['tid']
-                item['id'] = id
+                tid = i['tid']
+                item['id'] = tid
                 item['uin'] = uin
                 item['content'] = i.get('content')
                 item['created_time'] = i['created_time']
@@ -210,10 +214,10 @@ class QqzoneSpider(Spider):
                 if i.get('rt_tid'):
                     mood = i['rt_tid']
                 else:
-                    mood = id
+                    mood = tid
                 unikey = quote_plus(f'http://user.qzone.qq.com/{uin}/mood/{mood}')
                 # 请求点赞信息
-                yield Request(url=self.likes_url.format(uin=uin, unikey=unikey, g_tk=g_tk), cookies=cookies,
+                yield Request(url=self.likes_url.format(uin=o_uin, unikey=unikey, g_tk=g_tk), cookies=cookies,
                               callback=self.likes_parse,
                               meta={'uin': uin})
 
@@ -239,8 +243,8 @@ class QqzoneSpider(Spider):
                                 rep_item['m_uin'] = k['uin']
                                 rep_item['created_time'] = k['create_time']
                                 # id容易重复,加上留言id
-                                id = f'{id}_{k["tid"]}'
-                                rep_item['id'] = id
+                                r_id = f'{id}_{k["tid"]}'
+                                rep_item['id'] = r_id
                                 rep_item['content'] = k['content']
                                 yield rep_item
 
