@@ -20,6 +20,9 @@ ITEM_PIPELINES = {
    'qzone.pipelines.MySQLTwistedPipeline': 300,
 }
 
+# 同时最大连接数32，后手动登录web无法获取第一页后的说说，待测试
+CONCURRENT_REQUESTS = 32
+
 # 经测试可以关闭自动限速, 但第四次手动登录后无法获取说说列表,换号后也不行.似乎说说端口会封ip,待测试
 # AUTOTHROTTLE_ENABLED = True
 

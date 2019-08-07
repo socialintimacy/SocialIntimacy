@@ -33,6 +33,18 @@ class AccountItem(Item):
     birthyear = Field()
     sex = Field()
     nickname = Field()
+    career = Field()
+    # 当前地址
+    address = Field()
+    # 公司地址
+    c_address = Field()
+    # 故乡
+    h_address = Field()
+    # 1为未婚
+    marriage = Field()
+    # 4为AB型
+    bloodtype = Field()
+    company = Field()
     # 与本人的亲密度
     score = Field()
 
@@ -44,8 +56,20 @@ class AccountItem(Item):
         birthyear = self.get('birthyear')
         sex = self.get('sex')
         nickname = self['nickname']
+        company = self.get('company')
+        career = self.get('career')
+        address = self.get('address')
+        c_address = self.get('c_address')
+        h_address = self.get('h_address')
+        marriage = self.get('marriage')
+        bloodtype = self.get('bloodtype')
         score = self.get('score')
-        sql = f"INSERT IGNORE INTO Account(uin, age, birthday, birthyear, sex, nickname, score) VALUES ('{uin}','{age}','{birthday}','{birthyear}','{sex}','{nickname}','{score}')"
+        sql = (f"INSERT IGNORE INTO Account"
+               f"(uin, age, birthday, birthyear, sex, nickname, company, career, address, c_address, h_address,"
+               f" marriage, bloodtype, score)"
+               f" VALUES "
+               f"('{uin}','{age}','{birthday}','{birthyear}','{sex}','{nickname}','{company}','{career}','{address}',"
+               f"'{c_address}','{h_address}','{marriage}','{bloodtype}','{score}')")
         cursor.execute(sql)
 
 
@@ -68,6 +92,7 @@ class Taotaoitem(Item):
         created_time = self['created_time']
         id = self['id']
         sql = f"INSERT IGNORE INTO Taotao(uin, content, source, created_time, id) VALUES ('{uin}','{content}','{source}','{created_time}','{id}')"
+        print(sql)
         cursor.execute(sql)
 
 

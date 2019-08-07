@@ -119,10 +119,16 @@ class QqzoneSpider(Spider):
         con = pymysql.connect(**params)
 
         with con.cursor() as cur:
-            sql_msq = 'CREATE TABLE IF NOT EXISTS Msg(id VARCHAR(50) PRIMARY KEY,uin CHAR(10),m_uin CHAR(10),created_time INT,content VARCHAR(255))'
-            sql_account = 'CREATE TABLE IF NOT EXISTS Account(uin CHAR(10) PRIMARY KEY,age INT,birthday CHAR(15),birthyear CHAR(10),sex INT,nickname VARCHAR(50),score INT)'
-            sql_taotao = 'CREATE TABLE IF NOT EXISTS Taotao(id VARCHAR(50) PRIMARY KEY,uin CHAR(10),source CHAR(15),created_time INT,content VARCHAR(255))'
-            sql_likes = 'CREATE TABLE IF NOT EXISTS Likes(id CHAR(21) PRIMARY KEY,uin CHAR(10),f_uin CHAR(10),created_time INT,counts INT)'
+            sql_msq = ('CREATE TABLE IF NOT EXISTS Msg'
+                       '(id VARCHAR(50) PRIMARY KEY,uin CHAR(10),m_uin CHAR(10),created_time INT,content VARCHAR(255))')
+            sql_account = ('CREATE TABLE IF NOT EXISTS Account'
+                           '(uin CHAR(10) PRIMARY KEY,age INT,birthday CHAR(15),birthyear CHAR(10),sex INT,'
+                           'nickname VARCHAR(50),score INT, company VARCHAR(50), career VARCHAR(10), address VARCHAR(50),'
+                           'c_address VARCHAR(50), h_address VARCHAR(50), marriage INT, bloodtype INT)')
+            sql_taotao = ('CREATE TABLE IF NOT EXISTS Taotao'
+                          '(id VARCHAR(50) PRIMARY KEY,uin CHAR(10),source CHAR(15),created_time INT,content VARCHAR(255))')
+            sql_likes = ('CREATE TABLE IF NOT EXISTS Likes'
+                         '(id CHAR(21) PRIMARY KEY,uin CHAR(10),f_uin CHAR(10),created_time INT,counts INT)')
 
             cur.execute(sql_msq)
             cur.execute(sql_account)
@@ -145,8 +151,8 @@ class QqzoneSpider(Spider):
         """
         建表,模拟登录,获取本人相关信息,获取好友列表
         """
-        # 若已建表,可注释下一行
-        # self.create_tables()
+        # 若已经创建相应数据库和表,可注释下一行
+        self.create_tables()
         uin, cookies, g_tk, q_tk = self.py_login()
         pos = 0
         start_num = 0
@@ -156,11 +162,13 @@ class QqzoneSpider(Spider):
                       callback=self.uin_parse,
                       meta={'cookies': cookies, 'g_tk': g_tk, 'q_tk': q_tk, 'o_uin': uin})
         yield Request(url=self.taotao_url.format(uin=uin, pos=pos, g_tk=g_tk, q_tk=q_tk), cookies=cookies,
-                      callback=self.taotao_parse,
+                      callback=self.taotao_parse_1,
+                      dont_filter=True,
                       meta={'cookies': cookies, 'pos': pos, 'g_tk': g_tk, 'uin': uin, 'q_tk': q_tk})
         yield Request(url=self.msgb_url.format(uin=uin, start_num=start_num, g_tk=g_tk), cookies=cookies,
-                      callback=self.msgb_parse,
-                      meta={'cookies': cookies, 'start_num': start_num, 'g_tk': g_tk, 'uin': uin})
+                      callback=self.msgb_parse_1,
+                      dont_filter=True,
+                      meta={'cookies': cookies, 'g_tk': g_tk, 'uin': uin})
 
     def uin_parse(self, response):
         """
@@ -181,25 +189,49 @@ class QqzoneSpider(Spider):
                               callback=self.account_parse,
                               meta={'score': score})
                 yield Request(url=self.taotao_url.format(uin=uin, g_tk=g_tk, pos=pos, q_tk=q_tk), cookies=cookies,
-                              callback=self.taotao_parse,
-                              meta={'cookies': cookies, 'pos': pos, 'g_tk': g_tk, 'uin': uin, 'q_tk': q_tk, 'o_uin': o_uin})
+                              callback=self.taotao_parse_1,
+                              dont_filter=True,
+                              meta={'cookies': cookies, 'g_tk': g_tk, 'uin': uin, 'q_tk': q_tk, 'o_uin': o_uin})
                 yield Request(url=self.msgb_url.format(uin=uin, g_tk=g_tk, start_num=start_num), cookies=cookies,
-                              callback=self.msgb_parse,
-                              meta={'cookies': cookies, 'g_tk': g_tk, 'start_num': start_num, 'uin': uin})
+                              callback=self.msgb_parse_1,
+                              dont_filter=True,
+                              meta={'cookies': cookies, 'g_tk': g_tk, 'uin': uin})
 
-    def taotao_parse(self, response):
+    def taotao_parse_1(self, response):
         """
-        获取说说
+        获取说说总数,循环爬取所有说说
         """
         result = self.loads_jsonp(response.text)
         if result.get('msglist'):
             cookies = response.meta['cookies']
             g_tk = response.meta['g_tk']
             q_tk = response.meta['q_tk']
-            pos = response.meta['pos']
             uin = response.meta['uin']
             o_uin = response.meta['o_uin']
             total = result['total']
+            pos = 0
+
+            # 循环爬取所有说说
+            while True:
+                # 检查是否爬完所有说说
+                if pos < total:
+                    yield Request(url=self.taotao_url.format(uin=uin, pos=pos, g_tk=g_tk, q_tk=q_tk), cookies=cookies,
+                                  callback=self.taotao_parse_2,
+                                  meta={'cookies': cookies, 'pos': pos, 'g_tk': g_tk, 'uin': uin, 'q_tk': q_tk, 'o_uin': o_uin})
+                    pos += 20
+                else:
+                    break
+
+    def taotao_parse_2(self, response):
+        """
+        获取说说item
+        """
+        result = self.loads_jsonp(response.text)
+        if result.get('msglist'):
+            cookies = response.meta['cookies']
+            g_tk = response.meta['g_tk']
+            uin = response.meta['uin']
+            o_uin = response.meta['o_uin']
             for i in result['msglist']:
                 item = Taotaoitem()
                 tid = i['tid']
@@ -243,25 +275,40 @@ class QqzoneSpider(Spider):
                                 rep_item['m_uin'] = k['uin']
                                 rep_item['created_time'] = k['create_time']
                                 # id容易重复,加上留言id
-                                r_id = f'{id}_{k["tid"]}'
-                                rep_item['id'] = r_id
+                                id = f'{id}_{k["tid"]}'
+                                rep_item['id'] = id
                                 rep_item['content'] = k['content']
                                 yield rep_item
 
-            # 检查是否爬完所有说说
-            pos += 20
-            if pos < total:
-                yield Request(url=self.taotao_url.format(uin=uin, pos=pos, g_tk=g_tk, q_tk=q_tk), cookies=cookies,
-                              callback=self.taotao_parse,
-                              meta={'cookies': cookies, 'pos': pos, 'g_tk': g_tk, 'uin': uin, 'q_tk': q_tk})
-
-    def msgb_parse(self, response):
+    def msgb_parse_1(self, response):
         """
-        获取留言板留言
+        获取留言总数，循环爬取所有说说
         """
         result = self.loads_jsonp(response.text)
         uin = response.meta['uin']
-        start_num = response.meta['start_num']
+        if result.get('data'):
+            total = result['data']['total']
+            start_num = 0
+            # 循环爬取所有留言
+            while True:
+                # 检查是否爬取完所有留言
+                if start_num < total:
+                    cookies = response.meta['cookies']
+                    g_tk = response.meta['g_tk']
+                    yield Request(url=self.msgb_url.format(uin=uin, g_tk=g_tk, start_num=start_num), cookies=cookies,
+                                  callback=self.msgb_parse_2,
+                                  meta={'cookies': cookies, 'g_tk': g_tk, 'uin': uin})
+                    # 一次最多获取20条留言
+                    start_num += 20
+                else:
+                    break
+
+    def msgb_parse_2(self, response):
+        """
+        获取留言板留言item
+        """
+        result = self.loads_jsonp(response.text)
+        uin = response.meta['uin']
         if result.get('data'):
             total = result['data']['total']
             if result['data'].get('commentList'):
@@ -297,16 +344,6 @@ class QqzoneSpider(Spider):
                                 rep_item['id'] = f'{id}_{time}'
                                 yield rep_item
 
-                # 一次最多获取20条留言
-                start_num += 20
-                # 检查是否爬取完所有留言
-                if start_num < total:
-                    cookies = response.meta['cookies']
-                    g_tk = response.meta['g_tk']
-                    yield Request(url=self.msgb_url.format(uin=uin, g_tk=g_tk, start_num=start_num), cookies=cookies,
-                                  callback=self.msgb_parse,
-                                  meta={'cookies': cookies, 'g_tk': g_tk, 'start_num': start_num, 'uin': uin})
-
     def account_parse(self, response):
         """
         解析用户信息, score为亲密度
@@ -321,6 +358,14 @@ class QqzoneSpider(Spider):
             item['sex'] = data.get('sex')
             item['birthday'] = data.get('birthday')
             item['birthyear'] = data.get('birthyear')
+            item['career'] = data.get('career')
+            item['age'] = data.get('age')
+            item['address'] = f"{data.get('country')} {data.get('province')} {data.get('city')}"
+            item['c_address'] = f"{data.get('cco')} {data.get('cp')} {data.get('cc')} {data.get('cb')}"
+            item['marriage'] = data.get('marriage')
+            item['bloodtype'] = data.get('bloodtype')
+            item['h_address'] = f"{data.get('hco')} {data.get('hc')}"
+            item['company'] = data.get('company')
             if response.meta.get('score'):
                 item['score'] = response.meta['score']
             yield item

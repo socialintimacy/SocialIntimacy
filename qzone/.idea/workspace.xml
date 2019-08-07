@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7d425bfd-cd68-4544-89b7-fb50242c6518" name="Default Changelist" comment="" />
+    <list default="true" id="7d425bfd-cd68-4544-89b7-fb50242c6518" name="Default Changelist" comment="增加了用户表字段，优化了爬虫逻辑，测试了32CONCURRENT_REQUESTS">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qzone/items.py" beforeDir="false" afterPath="$PROJECT_DIR$/qzone/items.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qzone/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/qzone/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/qzone/spiders/qqzone.py" beforeDir="false" afterPath="$PROJECT_DIR$/qzone/spiders/qqzone.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,8 +22,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/qzone/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1683">
-              <caret line="99" selection-start-line="99" selection-end-line="99" />
+            <state relative-caret-position="391">
+              <caret line="23" column="24" lean-forward="true" selection-start-line="23" selection-start-column="24" selection-end-line="23" selection-end-column="24" />
             </state>
           </provider>
         </entry>
@@ -25,7 +31,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/qzone/pipelines.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
+            <state relative-caret-position="221">
               <caret line="15" column="39" selection-start-line="15" selection-start-column="39" selection-end-line="15" selection-end-column="39" />
               <folding>
                 <element signature="e#24#38#0" expanded="true" />
@@ -37,12 +43,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/qzone/spiders/qqzone.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="663">
-              <caret line="145" column="27" selection-start-line="145" selection-start-column="27" selection-end-line="145" selection-end-column="27" />
+            <state relative-caret-position="-1904">
+              <caret line="253" column="48" lean-forward="true" selection-start-line="253" selection-start-column="48" selection-end-line="253" selection-end-column="48" />
               <folding>
                 <element signature="e#24#35#0" expanded="true" />
-                <element signature="e#2655#3842#0" />
-                <element signature="e#3887#4108#0" />
               </folding>
             </state>
           </provider>
@@ -51,8 +55,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/qzone/items.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="60" column="19" lean-forward="true" selection-start-line="60" selection-start-column="19" selection-end-line="60" selection-end-column="19" />
+            <state relative-caret-position="51">
+              <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
             </state>
           </provider>
         </entry>
@@ -112,30 +116,35 @@
       <replace>Taotaoitem</replace>
     </replaceStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/qzone/spiders/qzone.py" />
         <option value="$PROJECT_DIR$/qzone/pipelines.py" />
-        <option value="$PROJECT_DIR$/qzone/settings.py" />
         <option value="$PROJECT_DIR$/demo.py" />
-        <option value="$PROJECT_DIR$/qzone/items.py" />
         <option value="$PROJECT_DIR$/qzone/demo.py" />
+        <option value="$PROJECT_DIR$/qzone/items.py" />
         <option value="$PROJECT_DIR$/qzone/spiders/qqzone.py" />
+        <option value="$PROJECT_DIR$/qzone/settings.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="247" />
-    <option name="y" value="136" />
-    <option name="width" value="1181" />
+    <option name="x" value="314" />
+    <option name="y" value="43" />
+    <option name="width" value="1064" />
     <option name="height" value="748" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -148,16 +157,22 @@
               <item name="qzone" type="462c0819:PsiDirectoryNode" />
               <item name="qzone" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="qzone" type="b2602c69:ProjectViewProjectNode" />
+              <item name="qzone" type="462c0819:PsiDirectoryNode" />
+              <item name="qzone" type="462c0819:PsiDirectoryNode" />
+              <item name="spiders" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../SocialIntimacy" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
@@ -245,16 +260,18 @@
       <workItem from="1563154931103" duration="900000" />
       <workItem from="1563156009998" duration="56312000" />
       <workItem from="1563779297908" duration="17316000" />
+      <workItem from="1565187221306" duration="3736000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="74528000" />
+    <option name="totallyTimeSpent" value="78264000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1373" height="875" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4986631" visible="true" weight="0.2577242" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4986631" visible="true" weight="0.3051997" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.5013369" side_tool="true" weight="0.2577242" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -268,7 +285,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" visible="true" weight="0.27272728" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.27345845" />
       <window_info anchor="bottom" id="Python Console" order="12" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -279,17 +296,6 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/qzone/spiders/qqzone.py</url>
-          <line>322</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/qzone$demo.coverage" NAME="demo Coverage Results" MODIFIED="1563795696348" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -314,13 +320,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/qzone/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1683">
-          <caret line="99" selection-start-line="99" selection-end-line="99" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/miniconda3/lib/python3.7/site-packages/selenium/webdriver/remote/webdriver.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="215">
@@ -328,22 +327,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/qzone/pipelines.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="39" selection-start-line="15" selection-start-column="39" selection-end-line="15" selection-end-column="39" />
-          <folding>
-            <element signature="e#24#38#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/15637843369943502.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/1563785154597463.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/15637843369943502.png" />
+    <entry file="file://$PROJECT_DIR$/1563785154597463.png" />
     <entry file="file://$USER_HOME$/miniconda3/lib/python3.7/site-packages/selenium/webdriver/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -389,38 +374,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/demo.py">
+    <entry file="file://$PROJECT_DIR$/demo.py" />
+    <entry file="file://$PROJECT_DIR$/qzone/demo.py" />
+    <entry file="file://$PROJECT_DIR$/qzone/pipelines.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="8" lean-forward="true" selection-start-line="9" selection-start-column="8" selection-end-line="9" selection-end-column="8" />
+        <state relative-caret-position="221">
+          <caret line="15" column="39" selection-start-line="15" selection-start-column="39" selection-end-line="15" selection-end-column="39" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#24#38#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/qzone/items.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="60" column="19" lean-forward="true" selection-start-line="60" selection-start-column="19" selection-end-line="60" selection-end-column="19" />
+        <state relative-caret-position="51">
+          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/qzone/demo.py">
+    <entry file="file://$PROJECT_DIR$/qzone/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="32" lean-forward="true" selection-start-line="2" selection-start-column="32" selection-end-line="2" selection-end-column="32" />
+        <state relative-caret-position="391">
+          <caret line="23" column="24" lean-forward="true" selection-start-line="23" selection-start-column="24" selection-end-line="23" selection-end-column="24" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/qzone/spiders/qqzone.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="663">
-          <caret line="145" column="27" selection-start-line="145" selection-start-column="27" selection-end-line="145" selection-end-column="27" />
+        <state relative-caret-position="-1904">
+          <caret line="253" column="48" lean-forward="true" selection-start-line="253" selection-start-column="48" selection-end-line="253" selection-end-column="48" />
           <folding>
             <element signature="e#24#35#0" expanded="true" />
-            <element signature="e#2655#3842#0" />
-            <element signature="e#3887#4108#0" />
           </folding>
         </state>
       </provider>
